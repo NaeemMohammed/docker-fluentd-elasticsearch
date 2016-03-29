@@ -13,6 +13,20 @@ ES_INDEX=${ES_INDEX:-fluentd}
 ES_TYPE=${ES_TYPE:-fluentd}
 
 echo "
+<source>
+  @type tail
+  format nginx
+  tag nginx.access
+  path /var/lib/docker/containers/*/*-json.log
+  pos_file /var/log/nginx.pos
+</source>
+<source>
+  @type tail
+  format /^(?<time>[^ ]+ [^ ]+) \[(?<log_level>.*?)\] (?<pid>\d*).(?<tid>[^:]*): (?<message>.*)$/
+  tag nginx.error
+  path /var/lib/docker/containers/*/*-json.log
+  pos_file /var/log/nginx.pos
+</source>
 <match **>
 	type elasticsearch
 	logstash_format true
